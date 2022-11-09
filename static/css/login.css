@@ -1,0 +1,38 @@
+body {
+    background: rgb(24,83,128);
+    background: linear-gradient(90deg, rgba(24,83,128,1) 0%, rgba(2,35,52,1) 100%);
+}
+
+.bg {
+    background-image: url("https://www.revistaequipar.com/public/images/secciones/galeria/09-Sistemas-de-control-de-acceso.jpg");
+    background-repeat: no-repeat;
+    background-position: center center;
+    border-radius: 10px 0 0 10px;
+}
+
+.icon {
+    color: #185389;
+}
+
+.cartdd {
+    background: #ffffff;
+    border-radius: 0 10px 10px 0;
+    transition: all .7s !important;
+    min-height: 625px;
+}
+
+.he-100 {
+    height: 100vh !important;
+}
+
+.alert {
+    transition: all .7s !important;
+}
+
+.ocultar{
+    opacity:0;
+}
+.cartd{
+    transition: all .7s !important;
+}
+
