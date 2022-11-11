@@ -5,10 +5,13 @@ let url_update_modulos_asignaion =
   appData.base_url + "Controller/modulos/updateModulos.php";
 let url_update_user_asignacion =
   appData.base_url + "Controller/modulos/updateUserAsignacion.php";
+  let url_new_puerta =
+  appData.base_url + "Controller/modulos/nuevaPuerta.php";
 
 let dataM = new FormData();
 let dataAM = new FormData();
 let dataAU = new FormData();
+let dataP = new FormData();
 
 function add_modulo() {
   let id_modulo = document.getElementById("id_mol");
@@ -53,6 +56,7 @@ function cargar_modelos() {
 
   const table_moduloss = (data) => {
     let contenido = "";
+    let puertass = 0;
     if (data == null) {
       contenido = `<tr><td colspan="3" >No hay usuarios</td></tr>`;
     } else {
@@ -60,10 +64,15 @@ function cargar_modelos() {
         //console.log(value)
         if (value.estatus != "Eliminado") {
           contenido += `<tr> 
-                  <th scope='row'>${value.id}</th>
-                  <td>${value.estatus}</td>
-                  <td>`;
-          if (value.estatus == "Bodega" || value.estatus == "Taller") {
+                  <th scope='row' class="text-center">${value.id}</th>
+                  <td class="text-center">${value.estatus}</td>
+                  <td class="text-center">`;
+                  Object.entries(value.puetas).forEach(([key, value]) => {
+                    puertass = key;
+                  });
+
+          contenido += `${puertass} </td><td class="text-center">`;
+          if (value.estatus == "Bodega") {
             contenido += `<div class="btn-group" role="group" aria-label="Basic outlined example">
              <button type="button" class="btn btn-outline-primary"
              data-bs-toggle="modal" data-bs-target="#Asignar" data-id="${value.id}"
@@ -79,18 +88,44 @@ function cargar_modelos() {
              </button>
            </div>`;
           } else {
-            contenido += `<button type="button" class="btn btn-outline-warning">
-                Reparar
-               </button>`;
+            contenido += `
+            <div class="btn-group" role="group" aria-label="Basic outlined example">
+            <button type="button" class="btn btn-outline-warning">Reparar</button>
+            <button type="button" class="btn btn-outline-primary"
+            onclick="add_puerta(${puertass} , '${value.id}')">
+            Añadir puerta</button>
+            </div>`;
           }
 
-          contenido += `</tr> `;
+          contenido += `</td></tr> `;
         }
       });
       //alert(JSON.stringify(data));
     }
     $elemento.innerHTML = contenido;
   };
+}
+
+function add_puerta(numpuertas, modulo) {
+  numpuertas++;
+  dataP.append("Modulo", modulo);
+  dataP.append("Numpuerta", numpuertas);
+    fetch(url_new_puerta, {
+      method: "POST",
+      body: dataP,
+    })
+      .then((response) => response.json())
+      .then((json) => {
+        //cargar_modulos();
+        if (!json.res) {
+          toast("danger", json.mes);
+        } else {
+          toast("success", json.mes);
+          cargar_modelos();
+        }
+      })
+      .catch((err) => console.log(err));
+
 }
 
 function eliminarModuloModal(e) {

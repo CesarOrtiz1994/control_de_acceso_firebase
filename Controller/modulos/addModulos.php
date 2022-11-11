@@ -14,6 +14,9 @@ if(count($data) == 0) {
         'id'        => $_POST[ 'Id' ],
         'estatus'    => $_POST[ 'Estatus' ]
     ] );
+    $update = $db->puerta($id, "1", [
+        'nombre'        => "puerta1"
+    ] );
 
     $obj[ 'res' ] = true;
     $obj[ 'mes' ] = "Modulo agregado correctamente";

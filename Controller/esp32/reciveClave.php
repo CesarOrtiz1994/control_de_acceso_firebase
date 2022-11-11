@@ -8,6 +8,7 @@ $db = new firebaseRDB( $databaseURL );
 $id = $_POST[ 'modulo' ];
 $clave = $_POST[ 'clave' ];
 $accion = $_POST[ 'accion' ];
+$puerta = $_POST['puerta'];
 
 //validamos clave
 $bucarNombre = $db->bucarclave( $id, $clave );
@@ -25,14 +26,16 @@ if ( $data == null ) {
         $apertura = $db->accesos( $id, [
         'nombre' => $data["nombre"],
         'fecha'  => date("Y-m-d H:i:s"),
-        'accion' => $obj
+        'accion' => $obj,
+        'puerta' => $puerta
         ]);
     } elseif ($accion == "C") {
         $obj = 'Cierre';
         $Cierre = $db->accesos( $id, [
         'nombre' => $data["nombre"],
         'fecha'  => date("Y-m-d H:i:s"),
-        'accion' => $obj
+        'accion' => $obj,
+        'puerta' => $puerta
         ]);
     } else {
         $obj = 'Accion no conocida ';

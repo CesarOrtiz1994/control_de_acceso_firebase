@@ -8,9 +8,10 @@
         <table class="table table-borderless ">
             <thead class="table-dark">
                 <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Ubicacion</th>
-                    <th scope="col">Asignaciones</th>
+                    <th scope="col" class="text-center">#</th>
+                    <th scope="col" class="text-center">Ubicacion</th>
+                    <th scope="col" class="text-center">Numero de puertas</th>
+                    <th scope="col" class="text-center">Asignaciones</th>
                 </tr>
             </thead>
             <tbody id="tableModelos">

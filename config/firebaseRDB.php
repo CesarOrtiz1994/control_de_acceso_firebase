@@ -56,6 +56,12 @@ class firebaseRDB{
       return $grab;
    }
 
+   public function puerta($modulo, $numpuerta, $data){
+      $path = $this->url."/modulos/$modulo/puetas/$numpuerta.json";
+      $grab = $this->grab($path, "PATCH", json_encode($data));
+      return $grab;
+   }
+
    public function delete($table, $uniqueID){
       $path = $this->url."/$table/$uniqueID.json";
       $grab = $this->grab($path, "DELETE");
