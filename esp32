@@ -1,0 +1,130 @@
+#include <HTTPClient.h>
+
+#include <WiFiClient.h>
+#include <WiFiServer.h>
+#include <WiFiType.h>
+#include <WiFiUdp.h>
+#include <WiFiAP.h>
+#include <WiFi.h>
+
+#define WIFI_SSID "usuario internet"
+#define WIFI_PASSWORD "clave internet"
+
+//aqui asignar el id del modulo
+String id = "id";
+//aqui asignar el numer de puerta
+String puerta = "1";
+
+
+#include "Keypad.h"
+
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+const byte ROWS = 4; //four rows
+const byte COLS = 4; //four columns
+
+char keys[ROWS][COLS] = {
+  {'1', '2', '3', 'A'},
+  {'4', '5', '6', 'B'},
+  {'7', '8', '9', 'C'},
+  {'*', '0', '#', 'D'}
+};
+
+// For ESP32 Microcontroller
+byte rowPins[ROWS] = {23, 4, 3, 15};
+byte colPins[COLS] = {19, 18, 5, 14};
+
+Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
+
+char pass[6] = "12345" ;
+char ingresado[6];
+int i = 0;
+
+
+String clave_ingresada = "";
+String accion = "";
+
+void setup() {
+  lcd.init();
+  lcd.backlight();
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Clave: ");
+
+  Serial.begin(9600);
+
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  Serial.print("conectando");
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.print(".");
+    delay(500);
+  }
+  Serial.println();
+  Serial.print("Conectado a la IP: ");
+  Serial.println(WiFi.localIP());
+}
+
+void loop() {
+
+  HTTPClient http;
+
+  char key = keypad.getKey();
+  if (key) {
+    ingresado[i] = key;
+    if (i < 5) {
+      lcd.setCursor(0, 0);
+      lcd.print("Clave: ");
+      lcd.setCursor(i, 1);
+      lcd.print(key);
+    }
+    i++;
+    if (i == 5) {
+      clave_ingresada = "";
+      Serial.println(" ");
+      clave_ingresada = String(ingresado[0]) + String(ingresado[1]) + String(ingresado[2]) + String(ingresado[3]) + String(ingresado[4]);
+      Serial.println("clave: " + clave_ingresada);
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Accion: ");
+    }
+    if (i == 6) {
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Accion: ");
+      accion = String(key);
+      lcd.setCursor(0, 1);
+      lcd.print(accion);
+      Serial.println("accion: " + accion);
+    }
+  }
+  if (i == 6) {
+    String clave = "accion=" + accion + "&modulo=" + id + "&clave=" + clave_ingresada;
+    http.begin("dominio/controldeacceso/Controller/esp32/reciveClave.php");
+    http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    int codigo_res = http.POST(clave);
+
+    if (codigo_res == 200) {
+      String cuerpo_res = http.getString();
+      Serial.println("El servidor respondió ▼ ");
+      Serial.println(cuerpo_res);
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print(cuerpo_res);
+      i = 0;
+    } else {
+
+      Serial.print("Error enviando POST, código: ");
+      Serial.println(codigo_res);
+      i = 0;
+
+    }
+
+    http.end();
+    delay(2000);
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Clave: ");
+  }
+}
